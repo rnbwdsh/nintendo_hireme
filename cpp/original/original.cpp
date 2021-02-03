@@ -52,6 +52,7 @@ u8 input[32]={
 };
 
 void Forward(u8 c[32], u8 d[32], u8 s[512], u32 p[32]) {
+
 	for(u32 i = 0; i < 256; i++) {
 		for(u8 j = 0; j < 32; j++) {
 			d[j] = s[c[j]];

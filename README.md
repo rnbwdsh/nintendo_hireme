@@ -1,5 +1,7 @@
 # Report - Hireme Nintendo Logic Reversing Challenge
 
+This is a solo project for the subject Master Project in AI (7.5 ECTS) in AI at JKU Linz by M. Vogl / k1155575. This project is licensed as [Creative Commons Zero v1.0](https://creativecommons.org/publicdomain/zero/1.0/).
+
 * [Introduction](#introduction)
 * [Program disection - python](#program-disection---python)
 * [Basic Blocks - Cryptography and Logic](#basic-blocks---cryptography-and-logic)
@@ -184,7 +186,7 @@ The code at the end proves, that passing the bits of input `inp` through a dot p
 ### Forward 2 - Galois field 2 
 A typical integer matrix multiplication would require simple matrix inversion which could be done with algorithms like the gauss inversion.
 
-But in our case, the input and output-fields are single bits, so every bit in the input is XOR'ed with a certain set of bits in the input field. As binary numbers are quite common, there is a special algebraic structure called GF2 ([galois field 2](https://en.wikipedia.org/wiki/GF(2))) which is a special kind of fields that only has two numbers and defines the multiplication as a logical and and the addition as a logical or. It can be seen as a 1-bit-integer-number that can overflow, so the only difference from regular integer numbers is that the addition of 1+1 is 0, not 2 (as this would be outside our field).
+But in our case, the input and output-fields are single bits, so every bit in the input is XOR'ed with a certain set of bits in the input field. As binary numbers are quite common, there is a special algebraic structure called GF2 ([galois field 2](https://en.wikipedia.org/wiki/GF(2))) which is a special kind of fields that only has two numbers and defines the multiplication as a logical AND, and the addition as a logical XOR. It can be seen as a 1-bit-integer-number that can overflow, so the only difference from regular integer numbers is that the addition of 1+1 is 0, not 2 (as this would be outside our field).
 
 The python-based computer algebra system [SageMath](https://www.sagemath.org/) already knows how to work with matrices of GF2 and inverting them is as simple as calling `matrix(GF(2), input_matrix).inverse()`. But as SageMath is not widely available and a pain to install, a numpy-version from [[here]](https://npdeep.github.io/matrix-inversion-gf2.html) using reduced row-echelon form is included.
 
@@ -648,17 +650,13 @@ Most benchmarks do 2^24 computations, resulting in a 1.3GB results file.
 
 ## Results
 
-★ For the very slow approaches, only 2^14 runs are done and the results are multiplied with 2^10 to interpolate the result. The solution-file of the 1^14 run is roughly 0.9MB, so this suggests that the work done could be less than 1/1^10, making the time-estimates rather conservative, even including overhead.
-
-★★ To further aid this, for the GPU-solutions, the printing isn't enabled in the evaluation-runs (only in the test-runs to verify validity) as printing can synchronize GPUs and severely throttle performance. In a real world scenario, the results would be written into a shared memory space and read by the CPU later.
-
 Program | Device | Hyperparameters | Time in ms
 --- | --- | ---: | ---:
-native python solution | CPU | 1 Thread | ★8.515.411.968
+native python solution | CPU | 1 Thread | \* 8.515.411.968
 numba optimized python | CPU | 16 Threads | 3.183.405
 numba + C++ optimization 2 | CPU | 32 Threads | 2.165.003
-heap-based CUDA | GPU | 2 Blocks, 128 Threads | ★★350.256.128
-heap-based CUDA | GPU | 16 Blocks, 16 Threads | ★★201.165.824
+heap-based CUDA | GPU | 2 Blocks, 128 Threads | \*\* 350.256.128
+heap-based CUDA | GPU | 16 Blocks, 16 Threads | \*\* 201.165.824
 heap-based C++ | CPU | 32 Threads | 197.342
 heap-based C++ | CPU | 16 Threads | 206.011
 stack-based C++ | CPU | 32 Threads | 187.158
@@ -666,6 +664,11 @@ stack-based C++ | CPU | 16 Threads | 198.909
 NumPy based | CPU | 32 Threads | 3.994.456
 CuPy based | GPU | 16 Batches | 1.276.221
 CuPy based | GPU | 1 Batch | 1.169.682
+
+
+\* For the very slow approaches, only 2^14 runs are done, and the results are multiplied with 2^10 to interpolate the result. The solution-file of the 1^14 run is roughly 0.9MB, so this suggests that the work done could be less than 1/1^10, making the time-estimates rather conservative, even including overhead.
+
+\*\* To further aid this, for the GPU-solutions, the printing isn't enabled in the evaluation-runs (only in the test-runs to verify validity) as printing can synchronize GPUs and severely throttle performance. In a real world scenario, the results would be written into a shared memory space and read by the CPU later.
 
 ## Discussion
 
